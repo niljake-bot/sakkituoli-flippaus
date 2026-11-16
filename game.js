@@ -17,16 +17,16 @@ const LANDING_TOLERANCE = 0.78; // Noin 45 astetta
 // Säkkituolin ominaisuudet
 const beanbag = {
     x: canvas.width / 2,
-    y: FLOOR_Y - 35, 
-    width: 80,
-    height: 70, // Visuaalinen korkeus (35 ylös ja 35 alas keskipisteestä)
+    y: FLOOR_Y - 40, 
+    width: 120,
+    height: 80, // Visuaalinen korkeus (40 ylös ja 40 alas keskipisteestä)
     vx: 0,
     vy: 0,
     angle: 0,
     angularVelocity: 0,
     
     reset() {
-        this.y = FLOOR_Y - 35;
+        this.y = FLOOR_Y - 40;
         this.vy = 0;
         this.angle = 0;
         this.angularVelocity = 0;
@@ -115,15 +115,15 @@ function update() {
         beanbag.angle += beanbag.angularVelocity;
 
         // Lattia-törmäys
-        if (beanbag.y + 35 >= FLOOR_Y && beanbag.vy > 0) {
-            beanbag.y = FLOOR_Y - 35;
+        if (beanbag.y + 40 >= FLOOR_Y && beanbag.vy > 0) {
+            beanbag.y = FLOOR_Y - 40;
             state = 'landed';
             checkLanding();
         }
         
         // Katto-törmäys (estetään ruudun yläpuolelle karkaaminen)
-        if (beanbag.y - 35 <= 0) {
-            beanbag.y = 35;
+        if (beanbag.y - 40 <= 0) {
+            beanbag.y = 40;
             beanbag.vy = 0;
         }
     }
@@ -139,43 +139,61 @@ function drawBeanbag() {
         const squish = 1 - (chargeAmount / 100) * 0.25; // max 25% litistys
         ctx.scale(1 + (1 - squish), squish);
         // Siirretään alaspäin, jotta pohja pysyy lattiassa litistyessä
-        ctx.translate(0, 35 * (1 - squish));
+        ctx.translate(0, 40 * (1 - squish));
     }
     
-    // Säkkituolin muoto (pisaramainen, leveämpi alhaalta, löysempi ja pehmeämpi)
-    ctx.fillStyle = '#E91E63'; // Pehmeä pinkki
-    ctx.strokeStyle = '#880E4F';
+    // Säkkituolin muoto (suorakaide, mutta löysä / Fatboy-tyylinen)
+    ctx.fillStyle = '#E53935'; // Fatboy red
+    ctx.strokeStyle = '#B71C1C';
     ctx.lineWidth = 4;
     
     ctx.beginPath();
-    ctx.moveTo(0, -35); // Yläosa
-    ctx.bezierCurveTo(30, -25, 45, 10, 45, 30); // Oikea kylki
-    ctx.bezierCurveTo(45, 45, -45, 45, -45, 30); // Pohja
-    ctx.bezierCurveTo(-45, 10, -30, -25, 0, -35); // Vasen kylki
+    // Ylävasen nurkka
+    ctx.moveTo(-50, -35);
+    // Yläreuna, joka painuu hieman sisään (lötköys)
+    ctx.quadraticCurveTo(0, -20, 50, -35);
+    // Oikea kylki pullottaa
+    ctx.quadraticCurveTo(65, 5, 55, 35);
+    // Pohja
+    ctx.quadraticCurveTo(0, 45, -55, 35);
+    // Vasen kylki pullottaa
+    ctx.quadraticCurveTo(-65, 5, -50, -35);
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
 
-    // Rypyt / taitteet säkkituolin sisällä (lisää pehmeyden tuntua)
-    ctx.strokeStyle = 'rgba(136, 14, 79, 0.4)'; // Läpinäkyvä tumma pinkki
+    // Rypyt / taitteet säkkituolin sisällä (lisää lötkön pehmeyden tuntua)
+    ctx.strokeStyle = 'rgba(183, 28, 28, 0.4)'; // Läpinäkyvä tumma punainen
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(-20, 10);
-    ctx.quadraticCurveTo(-5, 25, 15, 8);
-    ctx.moveTo(-25, -5);
-    ctx.quadraticCurveTo(-10, 5, -5, -20);
-    ctx.moveTo(15, -15);
-    ctx.quadraticCurveTo(20, -5, 30, 0);
+    // Y-mallinen ryppy / kangastaitos
+    ctx.moveTo(-20, 0);
+    ctx.quadraticCurveTo(0, 15, 25, 5);
+    ctx.moveTo(0, 15);
+    ctx.quadraticCurveTo(10, 30, 15, 35);
     ctx.stroke();
 
-    // Säkkituolin yläosan kahva/nuppi (tärkeä suunnan tunnistamiseksi)
-    ctx.fillStyle = '#C2185B';
+    // Fatboy-tyylinen lappu oikealla kyljellä
+    ctx.save();
+    // Siirrytään oikealle kyljelle
+    ctx.translate(58, -10);
+    ctx.rotate(0.2); // Pieni kallistus
     ctx.beginPath();
-    ctx.arc(0, -35, 6, 0, Math.PI * 2);
+    ctx.rect(0, 0, 30, 14); // Lapun koko
+    ctx.fillStyle = '#FFF';
     ctx.fill();
-    ctx.strokeStyle = '#880E4F';
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 1;
     ctx.stroke();
+    
+    // Lapun teksti
+    ctx.fillStyle = '#E53935';
+    ctx.font = 'bold 9px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('fatboy', 15, 7.5);
+
+    ctx.restore();
 
     ctx.restore();
 }
