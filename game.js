@@ -10,23 +10,23 @@ let chargeDirection = 1;
 const CHARGE_SPEED = 2; // Sopiva nopeus, jotta ehtii reagoida
 
 // Fysiikkavakiot
-const GRAVITY = 0.18; // Hitaampi, leijuva painovoima
+const GRAVITY = 0.12; // Vielä hitaampi, pehmeämmin putoava painovoima
 const FLOOR_Y = canvas.height - 40;
 const LANDING_TOLERANCE = 0.78; // Noin 45 astetta
 
 // Säkkituolin ominaisuudet
 const beanbag = {
     x: canvas.width / 2,
-    y: FLOOR_Y - 30, 
-    width: 160,
-    height: 60, // Visuaalinen korkeus (30 ylös ja 30 alas keskipisteestä)
+    y: FLOOR_Y - 45, 
+    width: 150,
+    height: 90, // Visuaalinen korkeus (45 ylös ja 45 alas keskipisteestä)
     vx: 0,
     vy: 0,
     angle: 0,
     angularVelocity: 0,
     
     reset() {
-        this.y = FLOOR_Y - 30;
+        this.y = FLOOR_Y - 45;
         this.vy = 0;
         this.angle = 0;
         this.angularVelocity = 0;
@@ -34,9 +34,9 @@ const beanbag = {
     
     jump(charge) {
         const chargeRatio = charge / 100;
-        // Hitaamman painovoiman vuoksi säädetyt voimat
-        this.vy = -6 - (chargeRatio * 9); // -6 ... -15
-        this.angularVelocity = 0.03 + (chargeRatio * 0.07); // 0.03 ... 0.10
+        // Hitaamman painovoiman vuoksi säädetyt voimat pehmeää leijailua varten
+        this.vy = -4.5 - (chargeRatio * 6.5); // -4.5 ... -11
+        this.angularVelocity = 0.02 + (chargeRatio * 0.05); // 0.02 ... 0.07 (rauhallisempi pyöriminen)
     }
 };
 
@@ -115,15 +115,15 @@ function update() {
         beanbag.angle += beanbag.angularVelocity;
 
         // Lattia-törmäys
-        if (beanbag.y + 30 >= FLOOR_Y && beanbag.vy > 0) {
-            beanbag.y = FLOOR_Y - 30;
+        if (beanbag.y + 45 >= FLOOR_Y && beanbag.vy > 0) {
+            beanbag.y = FLOOR_Y - 45;
             state = 'landed';
             checkLanding();
         }
         
         // Katto-törmäys (estetään ruudun yläpuolelle karkaaminen)
-        if (beanbag.y - 30 <= 0) {
-            beanbag.y = 30;
+        if (beanbag.y - 45 <= 0) {
+            beanbag.y = 45;
             beanbag.vy = 0;
         }
     }
@@ -139,58 +139,66 @@ function drawBeanbag() {
         const squish = 1 - (chargeAmount / 100) * 0.25; // max 25% litistys
         ctx.scale(1 + (1 - squish), squish);
         // Siirretään alaspäin, jotta pohja pysyy lattiassa litistyessä
-        ctx.translate(0, 30 * (1 - squish));
+        ctx.translate(0, 45 * (1 - squish));
     }
     
-    // Säkkituolin muoto (leveä, litteämpi Fatboy-tyylinen)
+    // Säkkituolin muoto (leveä, vaakatason Fatboy Original, n. 140x90 tyylinen)
     ctx.fillStyle = '#E53935'; // Fatboy red
     ctx.strokeStyle = '#B71C1C';
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 6; // Paksut saumat
     
     ctx.beginPath();
-    ctx.moveTo(-70, -25);
-    // Yläreuna, joka painuu hieman sisään (lötköys)
-    ctx.quadraticCurveTo(0, -15, 70, -25);
-    // Oikea kylki ja pyöreät kulmat
-    ctx.bezierCurveTo(85, -25, 85, 25, 70, 25);
-    // Pohja
-    ctx.quadraticCurveTo(0, 35, -70, 25);
-    // Vasen kylki ja pyöreät kulmat
-    ctx.bezierCurveTo(-85, 25, -85, -25, -70, -25);
+    ctx.moveTo(-65, -40); // Vasen ylä
+    ctx.quadraticCurveTo(0, -25, 65, -40); // Yläreuna (lötkö, hieman roikkuu keskeltä)
+    ctx.quadraticCurveTo(75, -40, 75, -20); // Oikea yläkulma
+    ctx.quadraticCurveTo(85, 0, 75, 20); // Oikea kylki pullottaa
+    ctx.quadraticCurveTo(75, 40, 65, 40); // Oikea alakulma
+    ctx.quadraticCurveTo(0, 45, -65, 40); // Alareuna
+    ctx.quadraticCurveTo(-75, 40, -75, 20); // Vasen alakulma
+    ctx.quadraticCurveTo(-85, 0, -75, -20); // Vasen kylki pullottaa
+    ctx.quadraticCurveTo(-75, -40, -65, -40); // Vasen yläkulma
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
+
+    // Piirretään sauman/tikkauksen efekti reunoille
+    ctx.save();
+    ctx.strokeStyle = '#FFCDD2'; // Vaaleampi "lanka"
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([6, 4]); // Katkoviiva tikkaukselle
+    ctx.stroke();
+    ctx.restore();
 
     // Rypyt / taitteet säkkituolin sisällä (lisää lötkön pehmeyden tuntua)
     ctx.strokeStyle = 'rgba(183, 28, 28, 0.4)'; // Läpinäkyvä tumma punainen
     ctx.lineWidth = 2;
     ctx.beginPath();
-    // Y-mallinen ryppy / kangastaitos
-    ctx.moveTo(-30, -5);
-    ctx.quadraticCurveTo(-10, 10, 25, 5);
-    ctx.moveTo(-10, 10);
-    ctx.quadraticCurveTo(5, 25, 10, 25);
+    // Iso diagonaalinen kangastaitos
+    ctx.moveTo(-40, -10);
+    ctx.quadraticCurveTo(-10, 15, 30, 5);
+    ctx.moveTo(-15, 15);
+    ctx.quadraticCurveTo(10, 35, 15, 30);
     ctx.stroke();
 
-    // Fatboy-tyylinen iso lappu oikealla kyljellä
+    // Fatboy-tyylinen iso valkoinen kangasmerkki oikealla kyljellä
     ctx.save();
-    // Siirrytään oikealle kyljelle
-    ctx.translate(70, -5);
-    ctx.rotate(0.1); // Pieni kallistus
+    // Siirrytään oikealle kyljelle, sauman ulkopuolelle
+    ctx.translate(76, -5);
+    ctx.rotate(0.15); // Pieni kallistus
     ctx.beginPath();
-    ctx.rect(0, -12, 44, 24); // Iso lappu
+    ctx.rect(0, -12, 48, 24); // Iso selkeä lappu
     ctx.fillStyle = '#FFF';
     ctx.fill();
     ctx.strokeStyle = '#333';
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1.5;
     ctx.stroke();
     
-    // Lapun teksti
+    // Lapun teksti ("fatboy")
     ctx.fillStyle = '#E53935';
-    ctx.font = 'bold 12px Arial';
+    ctx.font = 'bold 14px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('fatboy', 22, 1);
+    ctx.fillText('fatboy', 24, 1);
 
     ctx.restore();
 
@@ -212,7 +220,7 @@ function draw() {
         const barWidth = 100;
         const barHeight = 12;
         const barX = beanbag.x - barWidth / 2;
-        const barY = beanbag.y - 75; // Säädetty ylemmäs litteämmän säkkituolin vuoksi
+        const barY = beanbag.y - 85; // Säädetty ylemmäs litteämmän ja laajemman säkkituolin vuoksi
         
         // Palkin tausta
         ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
