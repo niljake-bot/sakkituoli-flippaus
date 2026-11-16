@@ -40,8 +40,11 @@ const beanbag = {
     }
 };
 
-function startCharge() {
-    if (state === 'start' || state === 'landed') {
+function handleInputStart() {
+    if (state === 'landed') {
+        beanbag.reset();
+        state = 'start';
+    } else if (state === 'start') {
         beanbag.reset();
         state = 'charging';
         chargeAmount = 0;
@@ -49,7 +52,7 @@ function startCharge() {
     }
 }
 
-function releaseCharge() {
+function handleInputEnd() {
     if (state === 'charging') {
         state = 'playing';
         beanbag.jump(chargeAmount);
@@ -60,26 +63,26 @@ function releaseCharge() {
 window.addEventListener('keydown', (e) => {
     if (e.code === 'Space' && !e.repeat) {
         e.preventDefault();
-        startCharge();
+        handleInputStart();
     }
 });
 window.addEventListener('keyup', (e) => {
     if (e.code === 'Space') {
         e.preventDefault();
-        releaseCharge();
+        handleInputEnd();
     }
 });
 
-canvas.addEventListener('mousedown', startCharge);
-window.addEventListener('mouseup', releaseCharge);
+canvas.addEventListener('mousedown', handleInputStart);
+window.addEventListener('mouseup', handleInputEnd);
 
 canvas.addEventListener('touchstart', (e) => { 
     e.preventDefault(); 
-    startCharge(); 
+    handleInputStart(); 
 }, {passive: false});
 window.addEventListener('touchend', (e) => { 
     e.preventDefault(); 
-    releaseCharge(); 
+    handleInputEnd(); 
 });
 
 function checkLanding() {
@@ -310,7 +313,7 @@ function draw() {
         
         ctx.fillStyle = '#333';
         ctx.font = '24px sans-serif';
-        ctx.fillText('Paina ja pidä välilyöntiä yrittääksesi uudelleen.', canvas.width / 2, canvas.height / 2 + 30);
+        ctx.fillText('Paina välilyöntiä (tai klikkaa) jatkaaksesi.', canvas.width / 2, canvas.height / 2 + 30);
     }
 }
 
