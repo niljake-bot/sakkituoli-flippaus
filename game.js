@@ -180,25 +180,62 @@ function drawBeanbag() {
     ctx.quadraticCurveTo(10, 35, 15, 30);
     ctx.stroke();
 
+    // Hymiö ja suuntanuoli helpottamaan asennon hahmottamista ilmassa
+    ctx.save();
+    // Silmät
+    ctx.fillStyle = '#FFF';
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(-20, -5, 8, 0, Math.PI * 2);
+    ctx.arc(20, -5, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    // Pupillit
+    ctx.fillStyle = '#333';
+    ctx.beginPath();
+    ctx.arc(-20, -5, 3, 0, Math.PI * 2);
+    ctx.arc(20, -5, 3, 0, Math.PI * 2);
+    ctx.fill();
+    // Hymy
+    ctx.beginPath();
+    ctx.arc(0, 5, 12, 0.1 * Math.PI, 0.9 * Math.PI);
+    ctx.stroke();
+    
+    // Suuntanuoli ylös (selkeyttää yläpuolta entisestään)
+    ctx.beginPath();
+    ctx.moveTo(0, -30);
+    ctx.lineTo(-8, -20);
+    ctx.lineTo(-3, -20);
+    ctx.lineTo(-3, -15);
+    ctx.lineTo(3, -15);
+    ctx.lineTo(3, -20);
+    ctx.lineTo(8, -20);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+
     // Fatboy-tyylinen iso valkoinen kangasmerkki oikealla kyljellä
     ctx.save();
     // Siirrytään oikealle kyljelle, sauman ulkopuolelle
-    ctx.translate(76, -5);
+    ctx.translate(76, -10);
     ctx.rotate(0.15); // Pieni kallistus
     ctx.beginPath();
-    ctx.rect(0, -12, 48, 24); // Iso selkeä lappu
+    ctx.rect(0, -16, 64, 32); // Suurennettu, aiemmin 48x24
     ctx.fillStyle = '#FFF';
     ctx.fill();
     ctx.strokeStyle = '#333';
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 2;
     ctx.stroke();
     
     // Lapun teksti ("fatboy")
     ctx.fillStyle = '#E53935';
-    ctx.font = 'bold 14px Arial';
+    ctx.font = 'bold 16px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('fatboy', 24, 1);
+    ctx.fillText('fatboy', 32, 0);
 
     ctx.restore();
 
