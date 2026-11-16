@@ -10,8 +10,9 @@ let chargeDirection = 1;
 const CHARGE_SPEED = 2; // Sopiva nopeus, jotta ehtii reagoida
 
 // Fysiikkavakiot
-const GRAVITY = 0.5;
+const GRAVITY = 0.25; // Pienempi painovoima tekee heitosta leijuvamman
 const FLOOR_Y = canvas.height - 40;
+const LANDING_TOLERANCE = 0.78; // Noin 45 astetta
 
 // Säkkituolin ominaisuudet
 const beanbag = {
@@ -33,9 +34,9 @@ const beanbag = {
     
     jump(charge) {
         const chargeRatio = charge / 100;
-        // Kulman ja vauhdin lineaarinen säätö tekee tietyistä latauksista "sweet spotteja"
-        this.vy = -10 - (chargeRatio * 15); // -10 ... -25
-        this.angularVelocity = 0.1 + (chargeRatio * 0.15); // 0.1 ... 0.25
+        // Pienemmät nopeudet ja pyöriminen hitaamman painovoiman vuoksi
+        this.vy = -7 - (chargeRatio * 11); // -7 ... -18
+        this.angularVelocity = 0.05 + (chargeRatio * 0.12); // 0.05 ... 0.17
     }
 };
 
@@ -85,10 +86,7 @@ function checkLanding() {
     // Normalisoi kulma välille -PI ja PI
     let normalizedAngle = Math.atan2(Math.sin(beanbag.angle), Math.cos(beanbag.angle));
     
-    // Sallittu toleranssi on noin 35 astetta (0.6 radiaania)
-    const tolerance = 0.6;
-    
-    if (Math.abs(normalizedAngle) <= tolerance) {
+    if (Math.abs(normalizedAngle) <= LANDING_TOLERANCE) {
         score++;
         if (score > highScore) {
             highScore = score;
@@ -144,16 +142,16 @@ function drawBeanbag() {
         ctx.translate(0, 35 * (1 - squish));
     }
     
-    // Säkkituolin muoto (pisaramainen, leveämpi alhaalta)
+    // Säkkituolin muoto (pisaramainen, leveämpi alhaalta, löysempi ja pehmeämpi)
     ctx.fillStyle = '#E91E63'; // Pehmeä pinkki
     ctx.strokeStyle = '#880E4F';
     ctx.lineWidth = 4;
     
     ctx.beginPath();
-    ctx.moveTo(0, -30); // Yläosa
-    ctx.bezierCurveTo(25, -30, 40, 0, 40, 20); // Oikea kylki
-    ctx.bezierCurveTo(40, 40, -40, 40, -40, 20); // Pohja
-    ctx.bezierCurveTo(-40, 0, -25, -30, 0, -30); // Vasen kylki
+    ctx.moveTo(0, -35); // Yläosa
+    ctx.bezierCurveTo(30, -25, 45, 10, 45, 30); // Oikea kylki
+    ctx.bezierCurveTo(45, 45, -45, 45, -45, 30); // Pohja
+    ctx.bezierCurveTo(-45, 10, -30, -25, 0, -35); // Vasen kylki
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
@@ -162,16 +160,18 @@ function drawBeanbag() {
     ctx.strokeStyle = 'rgba(136, 14, 79, 0.4)'; // Läpinäkyvä tumma pinkki
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(-15, 10);
-    ctx.quadraticCurveTo(0, 20, 15, 5);
-    ctx.moveTo(-20, -5);
-    ctx.quadraticCurveTo(-10, 0, -5, -15);
+    ctx.moveTo(-20, 10);
+    ctx.quadraticCurveTo(-5, 25, 15, 8);
+    ctx.moveTo(-25, -5);
+    ctx.quadraticCurveTo(-10, 5, -5, -20);
+    ctx.moveTo(15, -15);
+    ctx.quadraticCurveTo(20, -5, 30, 0);
     ctx.stroke();
 
     // Säkkituolin yläosan kahva/nuppi (tärkeä suunnan tunnistamiseksi)
     ctx.fillStyle = '#C2185B';
     ctx.beginPath();
-    ctx.arc(0, -32, 6, 0, Math.PI * 2);
+    ctx.arc(0, -35, 6, 0, Math.PI * 2);
     ctx.fill();
     ctx.strokeStyle = '#880E4F';
     ctx.lineWidth = 2;
@@ -236,7 +236,7 @@ function draw() {
         ctx.textAlign = 'center';
         let normalizedAngle = Math.atan2(Math.sin(beanbag.angle), Math.cos(beanbag.angle));
         
-        if (Math.abs(normalizedAngle) <= 0.6) {
+        if (Math.abs(normalizedAngle) <= LANDING_TOLERANCE) {
             ctx.fillStyle = '#4CAF50';
             ctx.font = 'bold 48px sans-serif';
             ctx.fillText('HIENOSTI!', canvas.width / 2, canvas.height / 2 - 30);
