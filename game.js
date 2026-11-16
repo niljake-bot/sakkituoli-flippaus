@@ -7,7 +7,7 @@ let state = 'start'; // 'start', 'charging', 'playing', 'landed'
 
 let chargeAmount = 0;
 let chargeDirection = 1;
-const CHARGE_SPEED = 2; // Sopiva nopeus, jotta ehtii reagoida
+const CHARGE_SPEED = 0.8; // Sopiva nopeus, jotta ehtii reagoida (hidastettu tarkempaa tähtäystä varten)
 
 // Fysiikkavakiot
 const GRAVITY = 0.12; // Vielä hitaampi, pehmeämmin putoava painovoima
@@ -35,8 +35,9 @@ const beanbag = {
     jump(charge) {
         const chargeRatio = charge / 100;
         // Hitaamman painovoiman vuoksi säädetyt voimat pehmeää leijailua varten
-        this.vy = -4.5 - (chargeRatio * 6.5); // -4.5 ... -11
-        this.angularVelocity = 0.02 + (chargeRatio * 0.05); // 0.02 ... 0.07 (rauhallisempi pyöriminen)
+        // Sidotaan voima entistä selkeämmin laukaisuun: suurempi lataus = paljon enemmän voimaa ja pyörimistä
+        this.vy = -3.0 - (chargeRatio * 14.0); // max -17 (korkeammalle)
+        this.angularVelocity = 0.02 + (chargeRatio * 0.18); // max 0.20 (enemmän pyörien)
     }
 };
 
