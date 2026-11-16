@@ -3,17 +3,17 @@ const ctx = canvas.getContext('2d');
 
 let score = 0;
 let highScore = 0;
-let state = 'playing'; // 'playing' tai 'landed'
+let state = 'start'; // 'start', 'playing', 'landed'
 
 // Fysiikkavakiot
 const GRAVITY = 0.25;
-const JUMP_FORCE = -8;
+const JUMP_FORCE = -15; // Voimakkaampi hyppy, koska ponnistetaan maasta
 const FLOOR_Y = canvas.height - 40;
 
 // Säkkituolin ominaisuudet
 const beanbag = {
     x: canvas.width / 2,
-    y: 100,
+    y: FLOOR_Y - 25, // 25 on puolet korkeudesta
     width: 80,
     height: 50,
     vx: 0,
@@ -22,7 +22,7 @@ const beanbag = {
     angularVelocity: 0,
     
     reset() {
-        this.y = 100;
+        this.y = FLOOR_Y - this.height / 2;
         this.vy = 0;
         this.angle = 0;
         this.angularVelocity = 0;
@@ -32,16 +32,16 @@ const beanbag = {
         this.vy = JUMP_FORCE;
         // Satunnainen pyörimisnopeus -0.15 ja 0.15 välillä
         const spinDirection = Math.random() > 0.5 ? 1 : -1;
-        this.angularVelocity = spinDirection * (0.08 + Math.random() * 0.12);
+        this.angularVelocity = spinDirection * (0.05 + Math.random() * 0.10);
     }
 };
 
 function inputAction() {
-    if (state === 'landed') {
+    if (state === 'start' || state === 'landed') {
         beanbag.reset();
         state = 'playing';
+        beanbag.jump();
     }
-    beanbag.jump();
 }
 
 window.addEventListener('keydown', (e) => {
@@ -80,7 +80,7 @@ function update() {
         beanbag.angle += beanbag.angularVelocity;
 
         // Lattia-törmäys
-        if (beanbag.y + beanbag.height / 2 >= FLOOR_Y) {
+        if (beanbag.y + beanbag.height / 2 >= FLOOR_Y && beanbag.vy > 0) {
             beanbag.y = FLOOR_Y - beanbag.height / 2;
             state = 'landed';
             checkLanding();
@@ -136,14 +136,18 @@ function draw() {
     ctx.textAlign = 'left';
     ctx.fillText(`Pisteet: ${score}`, 20, 40);
     ctx.fillText(`Ennätys: ${highScore}`, 20, 80);
-
-    if (state === 'landed') {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    
+    if (state === 'start') {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         ctx.fillStyle = '#FFF';
         ctx.textAlign = 'center';
-        
+        ctx.font = 'bold 36px sans-serif';
+        ctx.fillText('Paina välilyöntiä tai klikkaa aloittaaksesi', canvas.width / 2, canvas.height / 2);
+    } else if (state === 'landed') {
+        // Enää ei ole isoa koko ruudun peittävää pimeää overlaytä, vaan vain hieno teksti, jotta pelaaja näkee säkkituolin maassa
+        ctx.textAlign = 'center';
         let normalizedAngle = Math.atan2(Math.sin(beanbag.angle), Math.cos(beanbag.angle));
         if (Math.abs(normalizedAngle) <= 0.8) {
             ctx.fillStyle = '#4CAF50';
@@ -155,9 +159,9 @@ function draw() {
             ctx.fillText('TULI NENILLEEN!', canvas.width / 2, canvas.height / 2 - 30);
         }
         
-        ctx.fillStyle = '#FFF';
+        ctx.fillStyle = '#333';
         ctx.font = '24px sans-serif';
-        ctx.fillText('Paina välilyöntiä tai klikkaa ruutua yrittääksesi uudelleen.', canvas.width / 2, canvas.height / 2 + 30);
+        ctx.fillText('Paina välilyöntiä tai klikkaa ruutua flippaaksesi uudelleen.', canvas.width / 2, canvas.height / 2 + 30);
     }
 }
 
