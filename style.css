@@ -5,34 +5,102 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #222;
-    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: radial-gradient(circle at 50% 30%, #1e2433 0%, #0e1219 100%);
+    color: #f1f5f9;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    overflow: hidden;
+    padding: 20px;
+    overflow-x: hidden;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 860px;
+    width: 100%;
+}
+
+.header {
     text-align: center;
+    margin-bottom: 16px;
 }
 
 h1 {
-    margin-bottom: 10px;
-    color: #4CAF50;
+    font-size: 2.2rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: #ffffff;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+    margin-bottom: 6px;
 }
 
-p {
-    margin-bottom: 20px;
-    color: #ccc;
+.subtitle {
+    color: #94a3b8;
+    font-size: 1rem;
+    max-width: 600px;
+    line-height: 1.4;
+}
+
+.subtitle strong {
+    color: #38bdf8;
+}
+
+.canvas-wrapper {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    background: #141822;
 }
 
 canvas {
-    background-color: #87CEEB;
-    border: 4px solid #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    display: block;
     cursor: pointer;
+}
+
+.sound-toggle {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.15s ease, background 0.15s ease;
+    z-index: 10;
+}
+
+.sound-toggle:hover {
+    background: rgba(30, 41, 59, 0.9);
+    transform: scale(1.08);
+}
+
+.sound-toggle:active {
+    transform: scale(0.95);
+}
+
+.controls-hint {
+    margin-top: 14px;
+    color: #64748b;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+}
+
+.controls-hint strong {
+    color: #cbd5e1;
 }

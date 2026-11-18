@@ -8,10 +8,24 @@
 </head>
 <body>
     <div class="game-container">
-        <h1>Säkkituolin Flippauspeli</h1>
-        <p>Pidä välilyöntiä tai hiiren painiketta pohjassa ladataksesi heiton ja vapauta flippaaksesi! Laskeudu oikeinpäin saadaksesi pisteen.</p>
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <header class="header">
+            <h1>SÄKKITUOLIN FLIPPAUS</h1>
+            <p class="subtitle">Pidä <strong>välilyöntiä</strong> tai <strong>hiirtä</strong> pohjassa ladataksesi heiton ja vapauta flippaaksesi! Laskeudu pystyyn saadaksesi pisteitä.</p>
+        </header>
+
+        <div class="canvas-wrapper">
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+            <button id="soundToggle" class="sound-toggle" title="Äänet päälle / pois" aria-label="Äänet päälle / pois">
+                <span id="soundIcon">🔊</span>
+            </button>
+        </div>
+
+        <footer class="controls-hint">
+            <span>⌨️ <strong>Välilyönti</strong> tai 🖱️ <strong>Klikkaus</strong> lataa ja heittää</span>
+        </footer>
     </div>
+
+    <script src="assets.js"></script>
     <script src="game.js"></script>
 </body>
 </html>
